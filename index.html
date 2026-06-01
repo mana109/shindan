@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>事業診断 | Aya & Mana</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #D4537E;
+    --pink-light: #FBEAF0;
+    --pink-mid: #F4C0D1;
+    --teal: #1D9E75;
+    --teal-light: #E1F5EE;
+    --purple: #534AB7;
+    --purple-light: #EEEDFE;
+    --text: #1a1a1a;
+    --text-sub: #6b6b6b;
+    --border: #e8e4e0;
+    --bg: #faf8f6;
+    --white: #ffffff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 0 20px 60px; }
+
+  /* COVER */
+  #screen-cover { animation: fadeIn .5s ease; }
+  .cover-inner { padding: 60px 0 48px; text-align: center; }
+  .cover-badge { display: inline-block; font-size: 11px; font-weight: 500; letter-spacing: .1em; color: var(--pink); border: 0.5px solid var(--pink-mid); border-radius: 20px; padding: 5px 16px; margin-bottom: 28px; background: var(--pink-light); }
+  .cover-title { font-family: 'Noto Serif JP', serif; font-size: 26px; font-weight: 500; line-height: 1.7; color: var(--text); margin-bottom: 16px; }
+  .cover-sub { font-size: 14px; color: var(--text-sub); line-height: 1.9; margin-bottom: 36px; }
+  .cover-meta { display: flex; justify-content: center; gap: 20px; margin-bottom: 36px; }
+  .cover-meta-item { font-size: 12px; color: var(--text-sub); display: flex; align-items: center; gap: 5px; }
+  .cover-meta-item::before { content: "◎"; color: var(--pink); font-size: 10px; }
+  .btn-start { display: block; width: 100%; background: var(--pink); color: #fff; font-family: 'Noto Sans JP', sans-serif; font-size: 15px; font-weight: 500; padding: 16px 0; border-radius: 50px; border: none; cursor: pointer; letter-spacing: .04em; transition: opacity .2s; }
+  .btn-start:hover { opacity: .88; }
+  .cover-divider { border: none; border-top: 0.5px solid var(--border); margin: 40px 0; }
+  .cover-points { text-align: left; }
+  .cover-points-title { font-size: 13px; font-weight: 500; color: var(--text-sub); margin-bottom: 14px; letter-spacing: .05em; }
+  .cover-point { display: flex; gap: 10px; font-size: 13px; color: var(--text-sub); line-height: 1.7; margin-bottom: 9px; }
+  .cover-point::before { content: "✓"; color: var(--pink); font-weight: 500; flex-shrink: 0; }
+
+  /* QUIZ */
+  #screen-quiz { display: none; animation: fadeIn .4s ease; }
+  .progress-area { padding: 28px 0 20px; }
+  .progress-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .progress-label { font-size: 11px; color: var(--text-sub); letter-spacing: .06em; }
+  .progress-count { font-size: 13px; font-weight: 500; color: var(--pink); }
+  .progress-bar-bg { background: var(--border); border-radius: 99px; height: 3px; overflow: hidden; }
+  .progress-bar { background: var(--pink); height: 3px; border-radius: 99px; transition: width .4s ease; }
+  .q-card { background: var(--white); border: 0.5px solid var(--border); border-radius: 14px; padding: 28px 24px 24px; margin-bottom: 16px; }
+  .q-num { font-size: 11px; color: var(--pink); font-weight: 500; letter-spacing: .08em; margin-bottom: 10px; }
+  .q-text { font-family: 'Noto Serif JP', serif; font-size: 17px; font-weight: 500; color: var(--text); line-height: 1.7; margin-bottom: 22px; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .opt { display: flex; align-items: flex-start; gap: 12px; padding: 13px 16px; border: 0.5px solid var(--border); border-radius: 10px; cursor: pointer; background: var(--bg); transition: border-color .15s, background .15s; font-size: 14px; color: var(--text); line-height: 1.6; }
+  .opt:hover { border-color: var(--pink-mid); background: var(--pink-light); }
+  .opt.selected { border-color: var(--pink); background: var(--pink-light); }
+  .opt-mark { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--border); flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; transition: border-color .15s, background .15s; }
+  .opt.selected .opt-mark { border-color: var(--pink); background: var(--pink); }
+  .opt.selected .opt-mark::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #fff; }
+  .nav-row { display: flex; gap: 10px; margin-top: 8px; }
+  .btn-back { flex: 1; padding: 13px 0; border-radius: 50px; border: 0.5px solid var(--border); background: var(--white); color: var(--text-sub); font-family: 'Noto Sans JP', sans-serif; font-size: 14px; cursor: pointer; transition: background .15s; }
+  .btn-back:hover { background: var(--bg); }
+  .btn-next { flex: 2; padding: 13px 0; border-radius: 50px; border: none; background: var(--pink); color: #fff; font-family: 'Noto Sans JP', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: opacity .15s; }
+  .btn-next:disabled { background: var(--border); cursor: not-allowed; color: #aaa; }
+  .btn-next:not(:disabled):hover { opacity: .88; }
+
+  /* RESULT */
+  #screen-result { display: none; animation: fadeIn .5s ease; }
+  .result-top { padding: 44px 0 32px; text-align: center; }
+  .result-phase-badge { display: inline-block; font-size: 11px; font-weight: 500; letter-spacing: .08em; padding: 5px 16px; border-radius: 20px; margin-bottom: 20px; }
+  .result-phase-badge.type-a { background: var(--teal-light); color: var(--teal); border: 0.5px solid #9FE1CB; }
+  .result-phase-badge.type-b { background: #E1F0FE; color: #185FA5; border: 0.5px solid #B5D4F4; }
+  .result-phase-badge.type-c { background: var(--purple-light); color: var(--purple); border: 0.5px solid #CECBF6; }
+  .result-phase-badge.type-d { background: var(--pink-light); color: var(--pink); border: 0.5px solid var(--pink-mid); }
+  .result-title { font-family: 'Noto Serif JP', serif; font-size: 22px; font-weight: 500; line-height: 1.75; color: var(--text); margin-bottom: 14px; }
+  .result-hint { font-size: 13px; color: var(--text-sub); line-height: 1.9; margin-bottom: 0; }
+  .result-hint strong { color: var(--text); font-weight: 500; }
+  .teaser-card { border-radius: 12px; padding: 20px 22px; margin: 24px 0; }
+  .teaser-card.type-a { background: var(--teal-light); border: 0.5px solid #9FE1CB; }
+  .teaser-card.type-b { background: #E1F0FE; border: 0.5px solid #B5D4F4; }
+  .teaser-card.type-c { background: var(--purple-light); border: 0.5px solid #CECBF6; }
+  .teaser-card.type-d { background: var(--pink-light); border: 0.5px solid var(--pink-mid); }
+  .teaser-label { font-size: 11px; font-weight: 500; letter-spacing: .07em; margin-bottom: 8px; }
+  .teaser-card.type-a .teaser-label { color: #085041; }
+  .teaser-card.type-b .teaser-label { color: #0C447C; }
+  .teaser-card.type-c .teaser-label { color: #3C3489; }
+  .teaser-card.type-d .teaser-label { color: #72243E; }
+  .teaser-items { display: flex; flex-direction: column; gap: 7px; }
+  .teaser-item { font-size: 13px; line-height: 1.6; display: flex; gap: 8px; }
+  .teaser-card.type-a .teaser-item { color: #0F6E56; }
+  .teaser-card.type-b .teaser-item { color: #185FA5; }
+  .teaser-card.type-c .teaser-item { color: #534AB7; }
+  .teaser-card.type-d .teaser-item { color: #993556; }
+  .teaser-item::before { content: "•"; flex-shrink: 0; opacity: .6; }
+  .teaser-blur-note { font-size: 12px; text-align: center; padding: 10px 0 4px; }
+  .teaser-card.type-a .teaser-blur-note { color: #0F6E56; }
+  .teaser-card.type-b .teaser-blur-note { color: #185FA5; }
+  .teaser-card.type-c .teaser-blur-note { color: #534AB7; }
+  .teaser-card.type-d .teaser-blur-note { color: #993556; }
+  .line-cta-area { background: var(--white); border: 0.5px solid var(--border); border-radius: 14px; padding: 24px; text-align: center; margin-bottom: 14px; }
+  .line-cta-title { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 8px; line-height: 1.6; }
+  .line-cta-sub { font-size: 13px; color: var(--text-sub); line-height: 1.8; margin-bottom: 18px; }
+  .line-cta-list { text-align: left; margin-bottom: 18px; }
+  .line-cta-item { font-size: 13px; color: var(--text-sub); line-height: 1.7; display: flex; gap: 8px; margin-bottom: 6px; }
+  .line-cta-item::before { content: "✓"; color: var(--teal); font-weight: 500; flex-shrink: 0; }
+  .btn-line { display: block; width: 100%; background: #06C755; color: #fff; font-family: 'Noto Sans JP', sans-serif; font-size: 15px; font-weight: 500; padding: 15px 0; border-radius: 50px; border: none; cursor: pointer; transition: opacity .2s; letter-spacing: .03em; margin-bottom: 8px; }
+  .btn-line:hover { opacity: .88; }
+  .line-note { font-size: 11px; color: var(--text-sub); }
+  .btn-retry { display: block; width: 100%; background: transparent; color: var(--text-sub); font-family: 'Noto Sans JP', sans-serif; font-size: 13px; padding: 12px 0; border-radius: 50px; border: 0.5px solid var(--border); cursor: pointer; transition: background .15s; }
+  .btn-retry:hover { background: var(--bg); }
+  .from-label { font-size: 12px; color: var(--text-sub); text-align: center; margin-top: 12px; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- COVER -->
+<div id="screen-cover">
+  <div class="cover-inner">
+    <div class="cover-badge">無料診断 / 約3分</div>
+    <h1 class="cover-title">あなたの事業、今どの段階？<br>3分でわかる無料診断</h1>
+    <p class="cover-sub">受講生に向き合いたいのに、裏方業務に追われていませんか？<br>7つの質問に答えるだけで、今の現在地と<br>次に整えるべきことが明確になります。</p>
+    <div class="cover-meta">
+      <span class="cover-meta-item">全7問</span>
+      <span class="cover-meta-item">約3分</span>
+      <span class="cover-meta-item">完全無料</span>
+    </div>
+    <button class="btn-start" onclick="startQuiz()">診断をスタートする</button>
+    <hr class="cover-divider">
+    <div class="cover-points">
+      <div class="cover-points-title">LINEで届く診断フィードバック内容</div>
+      <div class="cover-point">今の事業フェーズと現在地</div>
+      <div class="cover-point">運営で負担になっている原因</div>
+      <div class="cover-point">UTAGEが今の自分に必要かどうか</div>
+      <div class="cover-point">今すぐ整えるべき優先順位</div>
+      <div class="cover-point">本業に集中するために次にすること</div>
+      <div class="cover-point">1年後のビジョンに向けた具体的なヒント</div>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="screen-quiz">
+  <div class="progress-area">
+    <div class="progress-top">
+      <span class="progress-label">QUESTION</span>
+      <span class="progress-count" id="prog-count">1 / 7</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar" id="prog-bar" style="width:14%"></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-num" id="q-num">Q1</div>
+    <div class="q-text" id="q-text"></div>
+    <div class="options" id="options"></div>
+  </div>
+  <div class="nav-row">
+    <button class="btn-back" id="btn-back" onclick="goBack()">戻る</button>
+    <button class="btn-next" id="btn-next" onclick="goNext()" disabled>次へ</button>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div id="screen-result">
+  <div class="result-top">
+    <div class="result-phase-badge" id="r-badge">診断結果</div>
+    <div class="result-title" id="r-title"></div>
+    <div class="result-hint" id="r-hint"></div>
+  </div>
+
+  <div class="teaser-card" id="r-teaser">
+    <div class="teaser-label">LINEで届くフィードバックの内容（一部）</div>
+    <div class="teaser-items" id="r-teaser-items"></div>
+    <div class="teaser-blur-note">詳しい内容・具体的なアドバイスはLINEでお届けします</div>
+  </div>
+
+  <div class="line-cta-area">
+    <div class="line-cta-title">詳しい診断フィードバックを<br>LINEで受け取る</div>
+    <div class="line-cta-sub">登録後、あなたのタイプに合わせた<br>詳細フィードバックを自動でお届けします。</div>
+    <div class="line-cta-list">
+      <div class="line-cta-item">今の事業の課題と原因</div>
+      <div class="line-cta-item">次に整えるべき優先順位</div>
+      <div class="line-cta-item">本業に集中するための具体的なヒント</div>
+      <div class="line-cta-item">必要な方には個別相談もご案内</div>
+    </div>
+    <button class="btn-line" onclick="goLine()">LINEに登録してフィードバックを受け取る</button>
+    <div class="line-note">登録後すぐに自動でお届けします</div>
+  </div>
+
+  <button class="btn-retry" onclick="retry()">もう一度診断する</button>
+  <div class="from-label">Aya &amp; Mana / 現役オンライン秘書</div>
+</div>
+
+</div>
+
+<script>
+const questions = [
+  {
+    text: "現在のUTAGEの利用状況を教えてください。",
+    opts: [
+      { label: "UTAGEはまだ使ったことがない", tag: "new" },
+      { label: "導入したばかりで、まだ使いこなせていない", tag: "use" },
+      { label: "導入して運用しているが、負担が大きい", tag: "use" },
+      { label: "UTAGEを知らなかった", tag: "new" }
+    ]
+  },
+  {
+    text: "今、事業運営で一番負担に感じていることは何ですか？",
+    opts: [
+      { label: "問い合わせ・申込み・決済などの事務作業", tag: "" },
+      { label: "LINE・メール配信などの情報発信", tag: "" },
+      { label: "受講生対応や個別サポート", tag: "" },
+      { label: "全体的に何もかも手が回っていない", tag: "" }
+    ]
+  },
+  {
+    text: "1週間のうち、裏方業務にどのくらい時間を使っていますか？",
+    opts: [
+      { label: "ほぼ毎日2〜3時間以上", tag: "heavy" },
+      { label: "週に数回、数時間程度", tag: "mid" },
+      { label: "月に数回程度", tag: "light" },
+      { label: "あまり気にしていない", tag: "light" }
+    ]
+  },
+  {
+    text: "今の状態に一番近いものを選んでください。",
+    opts: [
+      { label: "忙しすぎて、本業に集中できていない", tag: "" },
+      { label: "仕組みを作りたいが、何から始めればいいかわからない", tag: "" },
+      { label: "誰かに任せたいが、信頼できる人が見つからない", tag: "" },
+      { label: "このままでは続けられないと感じている", tag: "" }
+    ]
+  },
+  {
+    text: "理想の働き方に近いものを選んでください。",
+    opts: [
+      { label: "受講生対応だけに集中して、運営は任せたい", tag: "" },
+      { label: "仕組みを整えて、自動化できるところはしたい", tag: "" },
+      { label: "まず何が必要かを知って、少しずつ改善したい", tag: "" },
+      { label: "安定した収入を保ちながら、無理なく続けたい", tag: "" }
+    ]
+  },
+  {
+    text: "1年後、どんな事業の状態にしたいですか？",
+    opts: [
+      { label: "今より受講生数を増やして、売上を安定させたい", tag: "grow" },
+      { label: "売上規模より、受講生一人ひとりに深く関わる質を上げたい", tag: "quality" },
+      { label: "自分が動かなくても回る仕組みを作って、時間の自由を得たい", tag: "auto" },
+      { label: "今の事業を無理なく維持しながら、長く続けていきたい", tag: "sustain" }
+    ]
+  },
+  {
+    text: "事業を続けていく上で、一番大切にしていることは何ですか？",
+    opts: [
+      { label: "受講生の成果・満足度", tag: "" },
+      { label: "自分自身が無理なく働けること", tag: "" },
+      { label: "信頼できるチームや環境を作ること", tag: "" },
+      { label: "収入の安定・事業としての継続性", tag: "" }
+    ]
+  }
+];
+
+let current = 0;
+let answers = new Array(7).fill(null);
+
+const results = {
+  "new-heavy": {
+    type: "type-a",
+    badge: "フェーズ 1｜準備 → 構築",
+    title: "仕組みをゼロから\n作り始めるタイミングです",
+    hint: "業務の負担が大きい今こそ、\n<strong>正しく設計した仕組みを作るチャンス</strong>です。",
+    teaser: [
+      "今の負担が重い根本的な原因",
+      "UTAGEで自動化できる業務の具体例",
+      "導入から最短で整えるためのロードマップ"
+    ]
+  },
+  "new-light": {
+    type: "type-b",
+    badge: "フェーズ 1｜準備段階",
+    title: "今から仕組みを\n準備しておく段階です",
+    hint: "余裕があるうちに整えるのが最善。\n<strong>後手に回るほど、構築に時間がかかります。</strong>",
+    teaser: [
+      "今のあなたに合ったUTAGE活用のはじめ方",
+      "準備段階で整えておくべき優先順位",
+      "無理なく自動化を進めるステップ"
+    ]
+  },
+  "use-heavy": {
+    type: "type-c",
+    badge: "フェーズ 3｜改善・委任",
+    title: "今の仕組みを整えて\n運用を手放す段階です",
+    hint: "UTAGEは導入済み。あとは\n<strong>「任せられる状態」に仕上げるだけ</strong>です。",
+    teaser: [
+      "今の運用で負担が大きくなっている原因",
+      "構築を見直すだけで解決できること",
+      "運用サポートで手放せる具体的な業務"
+    ]
+  },
+  "use-mid": {
+    type: "type-d",
+    badge: "フェーズ 2｜構築改善",
+    title: "今の仕組みを\n使いこなす段階です",
+    hint: "導入はできている。あとは\n<strong>「正しく使いこなす」ための整理が必要</strong>です。",
+    teaser: [
+      "使いこなせていない機能と活用方法",
+      "設定の見直しで改善できるポイント",
+      "今より格段に楽になるための具体的なステップ"
+    ]
+  }
+};
+
+function getResultKey() {
+  const utageTag = questions[0].opts[answers[0]].tag;
+  const loadTag = questions[2].opts[answers[2]].tag;
+  if (utageTag === "new" && loadTag === "heavy") return "new-heavy";
+  if (utageTag === "new") return "new-light";
+  if (utageTag === "use" && (loadTag === "heavy" || loadTag === "mid")) return "use-heavy";
+  return "use-mid";
+}
+
+function startQuiz() {
+  document.getElementById('screen-cover').style.display = 'none';
+  document.getElementById('screen-quiz').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[current];
+  document.getElementById('q-num').textContent = 'Q' + (current + 1);
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('prog-count').textContent = (current + 1) + ' / 7';
+  document.getElementById('prog-bar').style.width = ((current + 1) / 7 * 100) + '%';
+  document.getElementById('btn-back').style.visibility = current === 0 ? 'hidden' : 'visible';
+  document.getElementById('btn-next').textContent = current === 6 ? '結果を見る' : '次へ';
+  const opts = document.getElementById('options');
+  opts.innerHTML = '';
+  q.opts.forEach((o, i) => {
+    const div = document.createElement('div');
+    div.className = 'opt' + (answers[current] === i ? ' selected' : '');
+    div.innerHTML = `<div class="opt-mark"></div><span>${o.label}</span>`;
+    div.onclick = () => selectOpt(i);
+    opts.appendChild(div);
+  });
+  document.getElementById('btn-next').disabled = answers[current] === null;
+}
+
+function selectOpt(i) {
+  answers[current] = i;
+  document.querySelectorAll('.opt').forEach((el, idx) => {
+    el.classList.toggle('selected', idx === i);
+  });
+  document.getElementById('btn-next').disabled = false;
+}
+
+function goNext() {
+  if (answers[current] === null) return;
+  if (current < 6) { current++; renderQuestion(); }
+  else showResult();
+}
+
+function goBack() {
+  if (current > 0) { current--; renderQuestion(); }
+}
+
+function showResult() {
+  document.getElementById('screen-quiz').style.display = 'none';
+  const r = results[getResultKey()];
+  document.getElementById('screen-result').style.display = 'block';
+  document.getElementById('r-badge').className = 'result-phase-badge ' + r.type;
+  document.getElementById('r-badge').textContent = r.badge;
+  document.getElementById('r-title').textContent = r.title;
+  document.getElementById('r-hint').innerHTML = r.hint.replace(/\n/g, '<br>');
+  const teaser = document.getElementById('r-teaser');
+  teaser.className = 'teaser-card ' + r.type;
+  document.getElementById('r-teaser-items').innerHTML = r.teaser.map(s => `<div class="teaser-item">${s}</div>`).join('');
+  window.scrollTo(0, 0);
+}
+
+function goLine() { alert('LINE登録URLをここに設定してください。'); }
+
+function retry() {
+  current = 0;
+  answers = new Array(7).fill(null);
+  document.getElementById('screen-result').style.display = 'none';
+  document.getElementById('screen-cover').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>
